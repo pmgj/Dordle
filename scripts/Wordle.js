@@ -3,12 +3,12 @@ import MoveResult from "./MoveResult.js";
 import NotInWordListError from "./NotInWordListError.js";
 
 export default class Wordle {
-    constructor(words) {
+    constructor(words, tries) {
         this.words = words;
         this.secret = words[Math.floor(Math.random() * words.length)];
         console.log(this.secret);
         this.tries = 0;
-        this.maxTries = 6;
+        this.maxTries = tries;
         this.wordLength = this.secret.length;
         this.isGameOver = null;
     }

@@ -1,17 +1,24 @@
-table {
+main table {
     margin: 1em auto;
     border-spacing: 0.3em;
     border-collapse: separate;
 }
 
-td {
+main td {
     border: 2px solid var(--bs-dark-bg-subtle);
     text-transform: uppercase;
-    width: 2em;
-    height: 2em;
+    --size: 2em;
+    width: var(--size);
+    height: var(--size);
     text-align: center;
     font-size: 2em;
     font-weight: bold;
+}
+
+@media (max-width: 400px) {
+    main td {
+        font-size: 0.9em;
+    }
 }
 
 td:not(:empty) {
@@ -87,9 +94,10 @@ td[data-animation="bounce"] {
     width: 10em;
     height: 3em;
     font-weight: bold;
-    padding: 0.5em;
+    padding: 0 0.5em;
     margin: 1em auto;
     font-size: 1.5em;
+    text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;

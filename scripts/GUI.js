@@ -6,12 +6,13 @@ import NotInWordListError from "./NotInWordListError.js";
 class GUI {
     constructor() {
         let tBodies = document.querySelectorAll("tbody");
-        this.wordle = [{ game: new Wordle(words), row: 0, col: 0, currentWord: "", tbody: tBodies[0], isOver: false }, { game: new Wordle(words), row: 0, col: 0, currentWord: "", tbody: tBodies[1], isOver: false }];
+        this.wordle = [];
+        for (const table of tBodies) {
+            this.wordle.push({ game: new Wordle(words, 7), row: 0, col: 0, currentWord: "", tbody: table, isOver: false });
+        }
     }
     showWord(mr, tabindex) {
         if (this.wordle[tabindex].isOver) return;
-        let bgStyles = ["bg-secondary", "bg-warning", "bg-success"];
-        let bdStyles = ["border-secondary", "border-warning", "border-success"];
         let endOfGame = () => {
             this.wordle[tabindex].col = 0;
             this.wordle[tabindex].currentWord = "";
@@ -33,12 +34,10 @@ class GUI {
                 window.onkeyup = undefined;
                 message.textContent = "Congratulations!";
                 message.className = "bg-success text-white";
-                message.style.visibility = "visible";
             } else if (mr.winner === Winner.LOSE) {
                 window.onkeyup = undefined;
-                message.textContent = `You lose! Correct words: ${results.map(mr => mr.code.toUpperCase())}`;
+                message.textContent = `You lose! ${this.wordle.map(mr => mr.game.secret.toUpperCase())}`;
                 message.className = "bg-secondary text-white";
-                message.style.visibility = "visible";
             }
         };
         let styleKeyboard = () => {
@@ -46,8 +45,10 @@ class GUI {
                 let index = mr.hint[i];
                 let letter = this.wordle[tabindex].currentWord[i].toLowerCase();
                 let b = document.querySelector(`button[data-value='${letter}']`);
-                let bStyles2 = ["--bs-secondary-color", "--bs-warning", "--bs-success"];
-                b.dataset[`color${tabindex}`] = bStyles2[index];
+                let bStyles = ["--bs-secondary-color", "--bs-warning", "--bs-success"];
+                if (bStyles.indexOf(b.dataset[`color${tabindex}`]) < bStyles.indexOf(bStyles[index])) {
+                    b.dataset[`color${tabindex}`] = bStyles[index];
+                }
                 if (b.dataset.color0 && b.dataset.color1) {
                     b.classList.remove("bg-secondary-subtle");
                     b.classList.add("text-white");
@@ -57,6 +58,8 @@ class GUI {
             endOfGame();
         };
         let animation = cell => {
+            let bgStyles = ["bg-secondary", "bg-warning", "bg-success"];
+            let bdStyles = ["border-secondary", "border-warning", "border-success"];
             cell.dataset.animation = "flip-in";
             cell.onanimationend = () => {
                 cell.dataset.animation = "flip-out";
@@ -98,7 +101,7 @@ class GUI {
         for (let i = 0; i < this.wordle.length; i++) {
             let temp = this.wordle[i];
             if (temp.col === 0) {
-                return;
+                continue;
             }
             temp.currentWord = temp.currentWord.slice(0, -1);
             temp.col--;
@@ -119,9 +122,9 @@ class GUI {
                 let td = temp.tbody.rows[temp.row].cells[temp.col];
                 td.textContent = letter;
                 td.dataset.animation = "pop";
+                temp.currentWord += letter;
+                temp.col++;
             }
-            temp.currentWord += letter;
-            temp.col++;
         }
     }
     process(key) {
