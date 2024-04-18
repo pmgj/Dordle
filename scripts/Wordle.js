@@ -6,7 +6,6 @@ export default class Wordle {
     constructor(words, tries) {
         this.words = words;
         this.secret = words[Math.floor(Math.random() * words.length)];
-        console.log(this.secret);
         this.tries = 0;
         this.maxTries = tries;
         this.wordLength = this.secret.length;
