@@ -9,12 +9,8 @@ export default class Wordle {
         this.tries = 0;
         this.maxTries = tries;
         this.wordLength = this.secret.length;
-        this.isGameOver = null;
     }
     check(value) {
-        if(this.isGameOver) {
-            return this.isGameOver;
-        }
         if (value.length !== this.secret.length) {
             throw new Error(`The length of the word is incorrect. Must be ${this.secret.length}.`);
         }
@@ -24,7 +20,7 @@ export default class Wordle {
         if (!this.words.includes(value)) {
             throw new NotInWordListError();
         }
-        let result = [-1, -1, -1, -1, -1];
+        let result = new Array(this.wordLength).fill(-1);
         for (let i = 0; i < this.secret.length; i++) {
             let number = value[i];
             if (!this.secret.includes(number)) {
@@ -51,12 +47,10 @@ export default class Wordle {
         }
         this.tries++;
         if (result.every(e => e === 2)) {
-            this.isGameOver = new MoveResult(Winner.WIN, this.secret, result);
-            return this.isGameOver;
+            return new MoveResult(Winner.WIN, this.secret, result);
         }
         if (this.tries === this.maxTries) {
-            this.isGameOver = new MoveResult(Winner.LOSE, this.secret, result);
-            return this.isGameOver;
+            return new MoveResult(Winner.LOSE, this.secret, result);
         }
         return new MoveResult(Winner.NONE, null, result);
     }

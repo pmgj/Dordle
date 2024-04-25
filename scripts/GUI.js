@@ -12,11 +12,9 @@ class GUI {
         }
     }
     showWord(mr, tabindex) {
-        if (this.wordle[tabindex].isOver) return;
         let endOfGame = () => {
             this.wordle[tabindex].col = 0;
             this.wordle[tabindex].currentWord = "";
-            if (this.wordle[tabindex].isOver) return;
             this.wordle[tabindex].row++;
             if (mr.winner === Winner.WIN) {
                 let j = 1, td = this.wordle[tabindex].tbody.rows[this.wordle[tabindex].row - 1].cells[0];
@@ -29,7 +27,6 @@ class GUI {
                 endanim(td);
                 this.wordle[tabindex].isOver = true;
             }
-            let message = document.querySelector("#message");
             if (this.wordle.every(w => w.isOver)) {
                 window.onkeyup = undefined;
                 message.textContent = "Congratulations!";
@@ -58,14 +55,13 @@ class GUI {
             endOfGame();
         };
         let animation = cell => {
-            let bgStyles = ["bg-secondary", "bg-warning", "bg-success"];
-            let bdStyles = ["border-secondary", "border-warning", "border-success"];
+            let styles = ["secondary", "warning", "success"]
             cell.dataset.animation = "flip-in";
             cell.onanimationend = () => {
                 cell.dataset.animation = "flip-out";
                 cell.classList.add("text-white");
-                cell.classList.add(bgStyles[mr.hint[cell.cellIndex]]);
-                cell.classList.add(bdStyles[mr.hint[cell.cellIndex]]);
+                cell.classList.add(`bg-${styles[mr.hint[cell.cellIndex]]}`);
+                cell.classList.add(`border-${styles[mr.hint[cell.cellIndex]]}`);
                 cell.onanimationend = () => {
                     cell.onanimationend = undefined;
                     if (cell.nextSibling) {
@@ -82,6 +78,7 @@ class GUI {
     checkWord() {
         for (let i = 0; i < this.wordle.length; i++) {
             try {
+                if (this.wordle[i].isOver) continue;
                 let temp = this.wordle[i].game.check(this.wordle[i].currentWord);
                 this.showWord(temp, i);
             } catch (ex) {
@@ -149,15 +146,12 @@ class GUI {
     fillBoard() {
         for (let i = 0; i < this.wordle.length; i++) {
             const element = this.wordle[i];
-            let rows = "";
             for (let i = 0; i < element.game.maxTries; i++) {
-                rows += "<tr>";
+                let rows = element.tbody.insertRow();
                 for (let j = 0; j < element.game.wordLength; j++) {
-                    rows += "<td></td>";
+                    rows.insertCell();
                 }
-                rows += "</tr>";
             }
-            element.tbody.innerHTML = rows;
         }
     }
     registerEvents() {
