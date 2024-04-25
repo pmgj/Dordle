@@ -46,7 +46,12 @@ class GUI {
                 if (bStyles.indexOf(b.dataset[`color${tabindex}`]) < bStyles.indexOf(bStyles[index])) {
                     b.dataset[`color${tabindex}`] = bStyles[index];
                 }
-                if (b.dataset.color0 && b.dataset.color1) {
+                if (this.wordle.every((x, i) => b.dataset[`color${i}`] || x.isOver)) {
+                    this.wordle.forEach((x, i) => {
+                        if (x.isOver && !b.dataset[`color${i}`]) {
+                            b.dataset[`color${i}`] = bStyles[i];
+                        }
+                    });
                     b.classList.remove("bg-secondary-subtle");
                     b.classList.add("text-white");
                     b.style.backgroundImage = `linear-gradient(to right, var(${b.dataset.color0}) 50%, var(${b.dataset.color1}) 50%)`;
